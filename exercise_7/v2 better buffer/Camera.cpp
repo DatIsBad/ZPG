@@ -1,0 +1,143 @@
+#include "Camera.h"
+
+Camera::Camera() {
+	whichLight = -1;
+
+	//set camera position
+	m_cameraPos = glm::vec3(0.0f, 1.0f, 0.0f);
+	m_cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+
+	//set direction of camera
+	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.3f, 0.0f);
+	glm::vec3 m_cameraDirection = glm::normalize(m_cameraPos - cameraTarget);
+
+	//set right axis of camera
+	m_cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	m_cameraWorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	m_cameraRight = glm::normalize(glm::cross(m_cameraUp, m_cameraDirection));
+
+	//atributes
+	m_movementSpeed = 2.5f;
+	m_mouseSensitivity = SENSITIVITY;
+	m_fov = ZOOM;
+	m_yaw = YAW;
+	m_pitch = PITCH;
+
+	height = 1200;
+	width = 1200;
+}
+
+Camera::~Camera() {
+	// Clear the list of observers
+	observers.clear();
+}
+
+
+
+
+//----------------------------------------------------
+const glm::mat4& Camera::GetViewMatrix() const {
+	return glm::lookAt(m_cameraPos, m_cameraPos + m_cameraFront, m_cameraUp);
+}
+
+const glm::mat4& Camera::GetProjectionMatrix() const {
+	return glm::perspective(glm::radians(m_fov), width / height, 0.1f, 100.f);
+}
+
+const glm::vec3& Camera::GetCameraPos() const {
+	return m_cameraPos;
+}
+
+const glm::vec3& Camera::getCameraDir() const {
+	return m_cameraFront;
+}
+
+
+
+
+
+// Process keyboard input
+void Camera::ProcessKeyboard(char direction, float deltaTime) {
+	float velocity = m_movementSpeed * deltaTime;
+
+	if (direction == 'W')
+		m_cameraPos += m_cameraFront * velocity;
+	if (direction == 'S')
+		m_cameraPos -= m_cameraFront * velocity;
+	if (direction == 'A')
+		m_cameraPos -= m_cameraRight * velocity;
+	if (direction == 'D')
+		m_cameraPos += m_cameraRight * velocity;
+
+	updateShaders();
+}
+
+
+void Camera::ProcessCursorMovemment(float xoffset, float yoffset, bool constrainPitch = true) {
+	xoffset *= m_mouseSensitivity;
+	yoffset *= m_mouseSensitivity;
+
+	m_yaw += xoffset;
+	m_pitch += yoffset;
+
+	// make sure that when pitch is out of bounds, screen doesn't get flipped
+	if (constrainPitch)
+	{
+		if (m_pitch > 89.0f)
+			m_pitch = 89.0f;
+		if (m_pitch < -89.0f)
+			m_pitch = -89.0f;
+	}
+
+	// update Front, Right and Up Vectors using the updated Euler angles
+	updateCameraVectors();
+
+	updateShaders();
+}
+
+void Camera::updateSizes(int height, int width) {
+	this->height = height;
+	this->width = width;
+
+	updateShaders();
+}
+
+void Camera::updateShaders() {
+	for (Observer* observer : observers) {
+		observer->update();
+	}
+}
+
+void Camera::addObserver(Observer* observer) {
+	observers.push_back(observer);
+}
+
+void Camera::removeObserver(Observer* observer) {
+	observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
+}
+
+
+
+
+
+
+
+
+
+
+// calculates the front vector from the Camera's (updated) Euler Angles
+void Camera::updateCameraVectors()
+{
+	// calculate the new Front vector
+	glm::vec3 front;
+	front.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+	front.y = sin(glm::radians(m_pitch));
+	front.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+	m_cameraFront = glm::normalize(front);
+	// also re-calculate the Right and Up vector
+	m_cameraRight = glm::normalize(glm::cross(m_cameraFront, m_cameraWorldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+	m_cameraUp = glm::normalize(glm::cross(m_cameraRight, m_cameraFront));
+}
+
+
+

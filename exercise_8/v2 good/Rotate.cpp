@@ -1,0 +1,22 @@
+#include "Rotate.h"
+
+Rotate::Rotate(float angle, const  glm::vec3& axis) : angle(angle), axis(axis) {	// angle example ... glm::radians(45.0f);   exis example ... glm::vec3(0.0f, 1.0f, 0.0f)
+    dynamicRotation = false;
+}
+
+glm::mat4 Rotate::getValue()  {
+    if (dynamicRotation == true) {
+        angle += 0.02f;
+    }
+
+	return glm::rotate(glm::mat4(1.0f), angle, axis);
+}
+
+void Rotate::setRotation(float newAngle, const glm::vec3& newAxis) {
+    angle = newAngle;
+    axis = newAxis;
+}
+
+void Rotate::dynamicRotationActivate() {
+    dynamicRotation = true;
+}

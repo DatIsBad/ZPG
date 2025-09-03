@@ -12,8 +12,7 @@ Odešlete prosím opět Vámi vytvořené zdrojové soubory CPP, H a GLSL (nepos
 
 Přiložte screeny obrazovek s výsledkem (informace v zadání).
 
-
-
+_______________________________________________________________________________________________________________________________________
 
 Výslednou práci odevzdejte nejpozději do zadaného termínu (pozdní odevzdání znamená ztrátu bodů). Obhajovat budeme to, co jste odeslali odevzdali. Přidejte i několik screenu vaších scén, případně video.
 

@@ -15,11 +15,6 @@ Přiložte screeny obrazovek s výsledkem (informace v zadání).
 
 
 
-
-
-
-
-
 Výslednou práci odevzdejte nejpozději do zadaného termínu (pozdní odevzdání znamená ztrátu bodů). Obhajovat budeme to, co jste odeslali odevzdali. Přidejte i několik screenu vaších scén, případně video.
 
 Projekt prosím odevzdejte do kelvinu nejpozději do neděle 8.12. (před obhajobou na cvičení).
